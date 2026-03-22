@@ -3,7 +3,28 @@ import TaskGroup from './components/TaskGroup';
 import './App.css';
 
 function App() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(() => {
+    const savedData = localStorage.getItem('taskApp_data');
+    
+    if (!savedData) return [];
+
+    const parsedTasks = JSON.parse(savedData);
+    const hariIni = new Date();
+    hariIni.setHours(0, 0, 0, 0);
+
+    const tugasYangMasihValid = parsedTasks.filter((task) => {
+      const taskDate = new Date(task.date);
+      taskDate.setHours(0, 0, 0, 0);
+      
+      return taskDate.getTime() >= hariIni.getTime(); 
+    });
+
+    return tugasYangMasihValid;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('taskApp_data', JSON.stringify(tasks));
+  },[tasks]);
   const [titleInput, setTitleInput] = useState('');
   const [dateInput, setDateInput] = useState('');
 
